@@ -52,11 +52,17 @@ export default function SignupPage() {
       });
 
       const data = await response.json();
+      console.log()
+      
+
 
       if (response.ok) {
         const token = response.headers.get("Authorization")?.split(" ")[1]; 
+        const userId = data.status.data.user.id;
+        console.log(userId)
         if (token) {
           localStorage.setItem("token", token); 
+          localStorage.setItem("userid",userId)
           alert("Login successful");
           router.push("/");
         } else {

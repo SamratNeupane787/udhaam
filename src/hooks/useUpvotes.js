@@ -21,13 +21,15 @@ export default function useUpvotes (){
     }
   };
 
-  const doUpvote = async (id) => {
+  const doUpvote = async (id, userId) => {
+   
     try {
       const response = await fetch(
         `http://127.0.0.1:8000/api/v1/startups/${id}/upvotes`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user_id: userId }),
         }
       );
 
@@ -41,13 +43,12 @@ export default function useUpvotes (){
     }
   };
 
-  const removeUpvote = async (id) => {
+  const removeUpvote = async (id, userId) => {
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/v1/startups/${id}/upvotes`,
+        `http://127.0.0.1:8000/api/v1/startups/${id}/upvotes/${userId}`,
         {
           method: "DELETE",
-          headers: { "Content-Type": "application/json" },
         }
       );
 

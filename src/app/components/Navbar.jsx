@@ -4,10 +4,11 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { Button } from "./ui/button";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-
+  const router = useRouter()
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };

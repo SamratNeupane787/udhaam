@@ -24,55 +24,69 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import useStartups from "@/hooks/useStartups";
 
 export default function SubmitStartup() {
-  const router = useRouter()
-  
-  
-  useEffect(()=>{
+  const router = useRouter();
+  const { submitStartups } = useStartups();
+
+  useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
       router.push("/auth/sign-up");
     }
-  },[])
+  }, []);
 
   const [images, setImages] = useState([]);
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState("");
   const [errors, setErrors] = useState({});
+  const [formData, setFormData] = useState({
+    name: "",
+    tagline: "",
+    category: "",
+    description: "",
+    logo: null,
+    website: "",
+    twitter: "",
+    linkedin: "",
+    launchType: "",
+  });
 
-  const handleImageUpload = (e) => {
-    const files = Array.from(e.target.files);
-    const newImages = files.map((file) => ({
-      url: URL.createObjectURL(file),
-      name: file.name,
-    }));
-    setImages((prev) => [...prev, ...newImages].slice(0, 5));
-  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  const removeImage = (index) => {
-    setImages((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  const handleTagAdd = (e) => {
-    if (e.key === "Enter" && tagInput && tags.length < 5) {
-      e.preventDefault();
-      if (!tags.includes(tagInput.toLowerCase())) {
-        setTags((prev) => [...prev, tagInput.toLowerCase()]);
-        setTagInput("");
-      }
+    if (!formData.name || !formData.tagline || !formData.category) {
+      alert("Please fill out all required fields.");
+      return;
     }
-  };
 
-  const removeTag = (tagToRemove) => {
-    setTags((prev) => prev.filter((tag) => tag !== tagToRemove));
+    const data = {
+      name: formData.name,
+      tagline: formData.tagline,
+      category: formData.category,
+      description: formData.description,
+      logo: formData.logo,
+      images: images,
+      tags: tags,
+      website: formData.website,
+      twitter: formData.twitter,
+      linkedin: formData.linkedin,
+      launchType: formData.launchType,
+    };
+
+    const response = await submitStartups(data);
+    if (response) {
+      alert("Submitted");
+    } else {
+      alert("Error");
+    }
   };
 
   return (
     <div className="min-h-screen bg-muted/50 py-12 px-4">
       <div className="container max-w-3xl mx-auto">
         <div className="space-y-6">
-        
           <div className="space-y-2">
             <h1 className="text-3xl font-bold tracking-tight">
               Submit Your Startup
@@ -83,7 +97,6 @@ export default function SubmitStartup() {
           </div>
 
           <Card className="p-6">
-          
             <div className="space-y-6">
               <div>
                 <h2 className="text-xl font-semibold mb-4">
@@ -92,12 +105,22 @@ export default function SubmitStartup() {
                 <div className="space-y-4">
                   <div>
                     <label className="text-sm font-medium">Startup Name*</label>
-                    <Input placeholder="Enter your startup's name" />
+                    <Input
+                      value={formData.name}
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
+                      placeholder="Enter your startup's name"
+                    />
                   </div>
 
                   <div>
                     <label className="text-sm font-medium">Tagline*</label>
                     <Input
+                      value={formData.tagline}
+                      onChange={(e) =>
+                        setFormData({ ...formData, tagline: e.target.value })
+                      }
                       placeholder="A short, catchy description (50 characters max)"
                       maxLength={50}
                     />
@@ -108,7 +131,12 @@ export default function SubmitStartup() {
 
                   <div>
                     <label className="text-sm font-medium">Category*</label>
-                    <Select>
+                    <Select
+                      value={formData.category}
+                      onValueChange={(value) =>
+                        setFormData({ ...formData, category: value })
+                      }
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Select a category" />
                       </SelectTrigger>
@@ -133,6 +161,13 @@ export default function SubmitStartup() {
                   <div>
                     <label className="text-sm font-medium">Description*</label>
                     <Textarea
+                      value={formData.description}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          description: e.target.value,
+                        })
+                      }
                       placeholder="Describe your startup in detail"
                       className="h-32"
                     />
@@ -146,7 +181,6 @@ export default function SubmitStartup() {
 
               <Separator />
 
-              {/* Media */}
               <div>
                 <h2 className="text-xl font-semibold mb-4">Media</h2>
 
@@ -162,6 +196,10 @@ export default function SubmitStartup() {
                           accept="image/*"
                           className="hidden"
                           id="logo-upload"
+                          onChange={(e) => {
+                            const file = e.target.files[0];
+                            setFormData({ ...formData, logo: file });
+                          }}
                         />
                         <label
                           htmlFor="logo-upload"
@@ -179,7 +217,7 @@ export default function SubmitStartup() {
                     </div>
                   </div>
 
-                  <div>
+                  {/* <div>
                     <label className="text-sm font-medium block mb-2">
                       Screenshots & Media (up to 5)
                     </label>
@@ -223,82 +261,64 @@ export default function SubmitStartup() {
                         </div>
                       )}
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
 
               <Separator />
 
-            
               <div>
                 <h2 className="text-xl font-semibold mb-4">Tags & Links</h2>
 
                 <div className="space-y-4">
                   <div>
-                    <label className="text-sm font-medium block mb-2">
-                      Tags (up to 5)
-                    </label>
-                    <div className="space-y-2">
-                      <Input
-                        placeholder="Add tags (press Enter)"
-                        value={tagInput}
-                        onChange={(e) => setTagInput(e.target.value)}
-                        onKeyDown={handleTagAdd}
-                      />
-                      <div className="flex flex-wrap gap-2">
-                        {tags.map((tag) => (
-                          <Badge
-                            key={tag}
-                            variant="secondary"
-                            className="cursor-pointer hover:bg-destructive hover:text-destructive-foreground"
-                            onClick={() => removeTag(tag)}
-                          >
-                            {tag}
-                            <X className="h-3 w-3 ml-1" />
-                          </Badge>
-                        ))}
+                    <label className="text-sm font-medium">Website*</label>
+                    <div className="flex">
+                      <div className="bg-muted px-3 py-2 border border-r-0 rounded-l-md">
+                        <Globe className="h-4 w-4 text-muted-foreground" />
                       </div>
+                      <Input
+                        value={formData.website}
+                        onChange={(e) =>
+                          setFormData({ ...formData, website: e.target.value })
+                        }
+                        placeholder="https://your-startup.com"
+                        className="rounded-l-none"
+                      />
                     </div>
                   </div>
 
-                  <div className="space-y-4">
-                    <div>
-                      <label className="text-sm font-medium">Website*</label>
-                      <div className="flex">
-                        <div className="bg-muted px-3 py-2 border border-r-0 rounded-l-md">
-                          <Globe className="h-4 w-4 text-muted-foreground" />
-                        </div>
-                        <Input
-                          placeholder="https://your-startup.com"
-                          className="rounded-l-none"
-                        />
+                  <div>
+                    <label className="text-sm font-medium">Twitter/X</label>
+                    <div className="flex">
+                      <div className="bg-muted px-3 py-2 border border-r-0 rounded-l-md">
+                        <Twitter className="h-4 w-4 text-muted-foreground" />
                       </div>
+                      <Input
+                        value={formData.twitter}
+                        onChange={(e) =>
+                          setFormData({ ...formData, twitter: e.target.value })
+                        }
+                        placeholder="@yourstartup"
+                        className="rounded-l-none"
+                      />
                     </div>
+                  </div>
 
-                    <div>
-                      <label className="text-sm font-medium">Twitter/X</label>
-                      <div className="flex">
-                        <div className="bg-muted px-3 py-2 border border-r-0 rounded-l-md">
-                          <Twitter className="h-4 w-4 text-muted-foreground" />
-                        </div>
-                        <Input
-                          placeholder="@yourstartup"
-                          className="rounded-l-none"
-                        />
+                  <div>
+                    <label className="text-sm font-medium">LinkedIn</label>
+                    <div className="flex">
+                      <div className="bg-muted px-3 py-2 border border-r-0 rounded-l-md">
+                        <Linkedin className="h-4 w-4 text-muted-foreground" />
                       </div>
-                    </div>
-
-                    <div>
-                      <label className="text-sm font-medium">LinkedIn</label>
-                      <div className="flex">
-                        <div className="bg-muted px-3 py-2 border border-r-0 rounded-l-md">
-                          <Linkedin className="h-4 w-4 text-muted-foreground" />
-                        </div>
-                        <Input
-                          placeholder="LinkedIn profile URL"
-                          className="rounded-l-none"
-                        />
-                      </div>
+                      <Input
+                        value={formData.linkedin}
+                        onChange={(e) =>
+                          setFormData({ ...formData, linkedin: e.target.value })
+                        }
+                        placeholder="LinkedIn profile URL"
+                        className="rounded-l-none"
+                      />
                     </div>
                   </div>
                 </div>
@@ -306,7 +326,6 @@ export default function SubmitStartup() {
 
               <Separator />
 
-              {/* Launch Preferences */}
               <div>
                 <h2 className="text-xl font-semibold mb-4">
                   Launch Preferences
@@ -314,7 +333,12 @@ export default function SubmitStartup() {
                 <div className="space-y-4">
                   <div>
                     <label className="text-sm font-medium">Launch Type*</label>
-                    <Select>
+                    <Select
+                      value={formData.launchType}
+                      onValueChange={(value) =>
+                        setFormData({ ...formData, launchType: value })
+                      }
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Select launch type" />
                       </SelectTrigger>
@@ -333,9 +357,12 @@ export default function SubmitStartup() {
               </div>
             </div>
 
-            {/* Submit Button */}
             <div className="mt-8 flex items-center gap-4">
-              <Button size="lg" className="w-full md:w-auto">
+              <Button
+                size="lg"
+                className="w-full md:w-auto"
+                onClick={handleSubmit}
+              >
                 Submit for Review
               </Button>
               <Button variant="outline" size="lg" className="w-full md:w-auto">
@@ -344,7 +371,6 @@ export default function SubmitStartup() {
             </div>
           </Card>
 
-          {/* Guidelines */}
           <Card className="p-6 bg-muted/50">
             <div className="flex gap-2">
               <AlertCircle className="h-5 w-5 text-primary shrink-0" />

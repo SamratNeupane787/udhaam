@@ -14,7 +14,7 @@ function Featured() {
   const [upvotedMap, setUpvotedMap] = useState({});
   const { doUpvote, removeUpvote } = useUpvotes();
   const { getStartups } = useStartups();
-
+  const userId = localStorage.getItem("userid");
   useEffect(() => {
     const fetchStartups = async () => {
       const response = await getStartups();
@@ -29,9 +29,8 @@ function Featured() {
 
   const handleUpvote = async (startupId) => {
     const alreadyUpvoted = upvotedMap[startupId];
-
     if (alreadyUpvoted) {
-      const response = await removeUpvote(startupId);
+      const response = await removeUpvote(startupId, userId);
       if (response) {
         setUpvotedMap((prev) => ({ ...prev, [startupId]: false }));
         setStartups((prev) =>
@@ -43,7 +42,8 @@ function Featured() {
         );
       }
     } else {
-      const response = await doUpvote(startupId);
+      const response = await doUpvote(startupId, userId);
+      console.log(response)
       if (response) {
         setUpvotedMap((prev) => ({ ...prev, [startupId]: true }));
         setStartups((prev) =>
@@ -53,6 +53,9 @@ function Featured() {
               : s
           )
         );
+      }
+      else{
+        alert('You can only upvote once!')
       }
     }
   };
@@ -99,14 +102,16 @@ function Featured() {
                       variant="ghost"
                       className="h-auto p-2 hover:bg-primary/5"
                     >
-                      <div className="text-center">
+                      <div
+                        className="text-center"
+                        onClick={() => handleUpvote(product.id)}
+                      >
                         <ArrowUpCircle
                           className={`h-5 w-5 mb-1 cursor-pointer transition ${
                             upvotedMap[product.id]
                               ? "text-blue-600"
                               : "text-primary"
                           }`}
-                          onClick={() => handleUpvote(product.id)}
                         />
                         <span className="text-xs font-medium block">
                           {product.upvotes_count ?? 0}
