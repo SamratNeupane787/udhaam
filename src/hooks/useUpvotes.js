@@ -1,10 +1,33 @@
-export default function useUpvotes (){
-
-
-  const getUpvotes = async (id) => {
+export default function useUpvotes() {
+  const doUpvote = async (startupId, userId) => {
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/v1/startups/${id}/upvotes`,
+        `http://127.0.0.1:8000/api/v1/startups/${startupId}/upvotes`, 
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user_id: userId}),
+        }
+      );
+
+      // if (!response.ok) {
+      //   throw new Error("Failed to upvote");
+      // }
+
+      const data = await response.json();
+
+      
+      return data;
+    } catch (error) {
+      console.error("Error toggling upvote:", error);
+      return null;
+    }
+  };
+
+  const getUpvotes = async (startupId) => {
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/v1/startups/${startupId}/upvotes`, 
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
@@ -21,52 +44,8 @@ export default function useUpvotes (){
     }
   };
 
-  const doUpvote = async (id, userId) => {
-   
-    try {
-      const response = await fetch(
-        `http://127.0.0.1:8000/api/v1/startups/${id}/upvotes`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ user_id: userId }),
-        }
-      );
-
-      if (!response.ok) throw new Error("Failed to upvote");
-
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error("Error upvoting:", error);
-      return null;
-    }
-  };
-
-  const removeUpvote = async (id, userId) => {
-    try {
-      const response = await fetch(
-        `http://127.0.0.1:8000/api/v1/startups/${id}/upvotes/${userId}`,
-        {
-          method: "DELETE",
-        }
-      );
-
-      if (!response.ok) throw new Error("Failed to remove upvote");
-
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error("Error removing upvote:", error);
-      return null;
-    }
-  };
-
-
-
   return {
     getUpvotes,
     doUpvote,
-    removeUpvote,
   };
 }

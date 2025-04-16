@@ -11,37 +11,51 @@ import { Badge } from "./ui/badge";
 function TrendingStartups() {
   const [trending, setTrending] = useState([]);
   const { trendingStartups } = useStartups();
-  const { doUpvote, removeUpvote } = useUpvotes();
-  const userId = localStorage.getItem("userId");
+  const { doUpvote } = useUpvotes();
+  const userId = localStorage.getItem("userid");
+  const [upvotedMap, setUpvotedMap] = useState({});
 
   useEffect(() => {
     const fetchTrendingStartups = async () => {
       const response = await trendingStartups();
-      if (response) {
+      if (Array.isArray(response)) {
         setTrending(response);
       }
     };
     fetchTrendingStartups();
   }, []);
 
-  const handleUpvote = async (startupId) => {
-    const response = await doUpvote(startupId, userId);
-    if (response) {
-      alert("Upvoted successfully");
-    } else {
-      alert("You have already upvoted");
-    }
-  };
 
-  const handleDownvote = async (startupId) => {
-    const response = await removeUpvote(startupId, userId);
-    if (response) {
-      alert("Upvote removed");
-    } else {
-      alert("Unable to remove upvote");
-    }
-  };
+const handleUpvote = async (startupId) => {
+  const response = await doUpvote(startupId, userId);
+  console.log(response);
+  if (response && response.message) {
+    const isRemoving = response.message === "Upvote removed successfully";
+    setUpvotedMap((prev) => ({
+      ...prev,
+      [startupId]: !isRemoving,
+    }));
+    setTrending((prev) =>
+      prev.map((s) =>
+        s.id === startupId
+          ? {
+              ...s,
+              upvotes_count: Math.max(
+                0,
+                (s.upvotes_count || 0) + (isRemoving ? -1 : 1)
+              ),
+            }
+          : s
+      )
+    );
 
+    await fetchTrendingStartups();
+  } else {
+    alert("Failed to upvote. Try again.");
+  }
+};
+
+  
   return (
     <div className="container px-4 pt-12 mx-auto">
       <div className="flex items-center justify-between mb-8">
@@ -94,14 +108,7 @@ function TrendingStartups() {
                     <span className="text-sm sm:text-base font-medium">
                       {product.upvotes_count ?? "0"}
                     </span>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="hover:bg-primary/10 p-2"
-                      onClick={() => handleDownvote(product.id)}
-                    >
-                      <ArrowDownCircle className="w-6 h-6 sm:w-8 sm:h-8 text-muted-foreground hover:text-red-600 transition" />
-                    </Button>
+                    
                   </div>
                 </div>
 

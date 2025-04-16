@@ -12,8 +12,8 @@ import {
   SelectValue,
 } from "../components/ui/select";
 import { Card } from "../components/ui/card";
-import { Badge } from "../components/ui/badge";
 import { Separator } from "../components/ui/separator";
+import { CldUploadWidget } from "next-cloudinary";
 import {
   ImagePlus,
   Globe,
@@ -39,8 +39,6 @@ export default function SubmitStartup() {
 
   const [images, setImages] = useState([]);
   const [tags, setTags] = useState([]);
-  const [tagInput, setTagInput] = useState("");
-  const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
     name: "",
     tagline: "",
@@ -75,11 +73,14 @@ export default function SubmitStartup() {
       launchType: formData.launchType,
     };
 
-    const response = await submitStartups(data);
-    if (response) {
-      alert("Submitted");
-    } else {
-      alert("Error");
+    try {
+      const response = await submitStartups(data);
+      if (response) {
+        alert("Submitted");
+        router.push("/");
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -98,92 +99,81 @@ export default function SubmitStartup() {
 
           <Card className="p-6">
             <div className="space-y-6">
-              <div>
-                <h2 className="text-xl font-semibold mb-4">
-                  Basic Information
-                </h2>
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium">Startup Name*</label>
-                    <Input
-                      value={formData.name}
-                      onChange={(e) =>
-                        setFormData({ ...formData, name: e.target.value })
-                      }
-                      placeholder="Enter your startup's name"
-                    />
-                  </div>
+              {/* Basic Information */}
+              <div className="flex flex-col gap-3 ">
+                <div>
+                  <label className="text-sm font-medium">Startup Name*</label>
+                  <Input
+                    value={formData.name}
+                    onChange={(e) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
+                    placeholder="Enter your startup's name"
+                  />
+                </div>
 
-                  <div>
-                    <label className="text-sm font-medium">Tagline*</label>
-                    <Input
-                      value={formData.tagline}
-                      onChange={(e) =>
-                        setFormData({ ...formData, tagline: e.target.value })
-                      }
-                      placeholder="A short, catchy description (50 characters max)"
-                      maxLength={50}
-                    />
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Make it clear and memorable
-                    </p>
-                  </div>
+                <div>
+                  <label className="text-sm font-medium">Tagline*</label>
+                  <Input
+                    value={formData.tagline}
+                    onChange={(e) =>
+                      setFormData({ ...formData, tagline: e.target.value })
+                    }
+                    placeholder="A short, catchy description (50 characters max)"
+                    maxLength={50}
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Make it clear and memorable
+                  </p>
+                </div>
 
-                  <div>
-                    <label className="text-sm font-medium">Category*</label>
-                    <Select
-                      value={formData.category}
-                      onValueChange={(value) =>
-                        setFormData({ ...formData, category: value })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="saas">SaaS</SelectItem>
-                        <SelectItem value="ai">
-                          Artificial Intelligence
-                        </SelectItem>
-                        <SelectItem value="productivity">
-                          Productivity
-                        </SelectItem>
-                        <SelectItem value="developer-tools">
-                          Developer Tools
-                        </SelectItem>
-                        <SelectItem value="design-tools">
-                          Design Tools
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                <div>
+                  <label className="text-sm font-medium">Category*</label>
+                  <Select
+                    value={formData.category}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, category: value })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="saas">SaaS</SelectItem>
+                      <SelectItem value="ai">
+                        Artificial Intelligence
+                      </SelectItem>
+                      <SelectItem value="productivity">Productivity</SelectItem>
+                      <SelectItem value="developer-tools">
+                        Developer Tools
+                      </SelectItem>
+                      <SelectItem value="design-tools">Design Tools</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-                  <div>
-                    <label className="text-sm font-medium">Description*</label>
-                    <Textarea
-                      value={formData.description}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          description: e.target.value,
-                        })
-                      }
-                      placeholder="Describe your startup in detail"
-                      className="h-32"
-                    />
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Include your value proposition, target audience, and what
-                      makes you unique
-                    </p>
-                  </div>
+                <div className="col-span-2">
+                  <label className="text-sm font-medium">Description*</label>
+                  <Textarea
+                    value={formData.description}
+                    onChange={(e) =>
+                      setFormData({ ...formData, description: e.target.value })
+                    }
+                    placeholder="Describe your startup in detail"
+                    className="h-32"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Include your value proposition, target audience, and what
+                    makes you unique
+                  </p>
                 </div>
               </div>
 
               <Separator />
 
+              {/* Media */}
               <div>
                 <h2 className="text-xl font-semibold mb-4">Media</h2>
-
                 <div className="space-y-4">
                   <div>
                     <label className="text-sm font-medium block mb-2">
@@ -191,85 +181,51 @@ export default function SubmitStartup() {
                     </label>
                     <div className="flex items-center gap-4">
                       <div className="h-24 w-24 rounded-lg border-2 border-dashed border-muted-foreground/25 flex items-center justify-center">
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          id="logo-upload"
-                          onChange={(e) => {
-                            const file = e.target.files[0];
-                            setFormData({ ...formData, logo: file });
+                        <CldUploadWidget
+                          uploadPreset="udhaam"
+                          onSuccess={(result) => {
+                            setFormData((prev) => ({
+                              ...prev,
+                              logo: result.info.secure_url,
+                            }));
                           }}
-                        />
-                        <label
-                          htmlFor="logo-upload"
-                          className="cursor-pointer p-4 text-center"
                         >
-                          <ImagePlus className="h-6 w-6 mx-auto text-muted-foreground" />
-                          <span className="text-xs text-muted-foreground mt-1 block">
-                            Upload logo
-                          </span>
-                        </label>
+                          {({ open }) => (
+                            <button
+                              type="button"
+                              onClick={() => open()}
+                              className="cursor-pointer p-4 text-center"
+                            >
+                              <ImagePlus className="h-6 w-6 mx-auto text-muted-foreground" />
+                              <span className="text-xs text-muted-foreground mt-1 block">
+                                Upload logo
+                              </span>
+                            </button>
+                          )}
+                        </CldUploadWidget>
                       </div>
+                      {formData.logo && (
+                        <Image
+                          src={formData.logo}
+                          alt="Uploaded logo"
+                          width={96}
+                          height={96}
+                          className="rounded-md border object-contain"
+                        />
+                      )}
                       <p className="text-sm text-muted-foreground">
                         Recommended: 200x200px PNG or JPG
                       </p>
                     </div>
                   </div>
-
-                  {/* <div>
-                    <label className="text-sm font-medium block mb-2">
-                      Screenshots & Media (up to 5)
-                    </label>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      {images.map((image, index) => (
-                        <div key={index} className="relative group">
-                          <Image
-                            src={image.url || "/placeholder.svg"}
-                            alt={image.name}
-                            width={200}
-                            height={150}
-                            className="rounded-lg object-cover w-full h-[150px]"
-                          />
-                          <button
-                            onClick={() => removeImage(index)}
-                            className="absolute top-2 right-2 p-1 bg-background/80 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                          >
-                            <X className="h-4 w-4" />
-                          </button>
-                        </div>
-                      ))}
-                      {images.length < 5 && (
-                        <div className="h-[150px] rounded-lg border-2 border-dashed border-muted-foreground/25 flex items-center justify-center">
-                          <input
-                            type="file"
-                            accept="image/*"
-                            multiple
-                            className="hidden"
-                            id="image-upload"
-                            onChange={handleImageUpload}
-                          />
-                          <label
-                            htmlFor="image-upload"
-                            className="cursor-pointer p-4 text-center"
-                          >
-                            <Upload className="h-6 w-6 mx-auto text-muted-foreground" />
-                            <span className="text-xs text-muted-foreground mt-1 block">
-                              Upload images
-                            </span>
-                          </label>
-                        </div>
-                      )}
-                    </div>
-                  </div> */}
                 </div>
               </div>
 
               <Separator />
 
+              {/* Tags & Links */}
               <div>
                 <h2 className="text-xl font-semibold mb-4">Tags & Links</h2>
-
                 <div className="space-y-4">
                   <div>
                     <label className="text-sm font-medium">Website*</label>
@@ -326,48 +282,45 @@ export default function SubmitStartup() {
 
               <Separator />
 
+              {/* Launch Preferences */}
               <div>
                 <h2 className="text-xl font-semibold mb-4">
                   Launch Preferences
                 </h2>
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium">Launch Type*</label>
-                    <Select
-                      value={formData.launchType}
-                      onValueChange={(value) =>
-                        setFormData({ ...formData, launchType: value })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select launch type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="public">Public Launch</SelectItem>
-                        <SelectItem value="private">
-                          Private Launch (Coming Soon)
-                        </SelectItem>
-                        <SelectItem value="schedule">
-                          Schedule for Later
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                <div>
+                  <label className="text-sm font-medium">Launch Type*</label>
+                  <Select
+                    value={formData.launchType}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, launchType: value })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select launch type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="public">Public Launch</SelectItem>
+                      <SelectItem value="private">
+                        Private Launch (Coming Soon)
+                      </SelectItem>
+                      <SelectItem value="schedule">
+                        Schedule for Later
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </div>
 
-            <div className="mt-8 flex items-center gap-4">
+            <div className="mt-8 flex flex-col md:flex-row items-center gap-4">
               <Button
                 size="lg"
-                className="w-full md:w-auto"
+                className="w-full md:w-auto bg-blue-600"
                 onClick={handleSubmit}
               >
                 Submit for Review
               </Button>
-              <Button variant="outline" size="lg" className="w-full md:w-auto">
-                Save as Draft
-              </Button>
+              
             </div>
           </Card>
 

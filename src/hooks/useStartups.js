@@ -67,7 +67,7 @@ export default function useStartups(){
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,s
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(data),
       });
@@ -82,14 +82,32 @@ export default function useStartups(){
       }
     } catch (error) {
       alert("Error Submitting startups: " + error.message);
+      console.log(error)
     } finally {
       dataLoading = false;
     }
   };
+
+  const myStartups = async(id)=>{
+    try {
+      dataLoading = true
+      const response = await fetch(`http://127.0.0.1:8000/mystartups/${id}`)
+      const data = await response.json()
+      return data
+    
+    } catch (error) {
+      dataLoading = false
+      alert("Error fetching the startups")
+    }
+    finally{
+      dataLoading = false
+    }
+  }
   return {
     getStartups,
     getStartup,
     trendingStartups,
     submitStartups,
+    myStartups
   };
 }

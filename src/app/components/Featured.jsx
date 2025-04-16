@@ -12,54 +12,56 @@ import useUpvotes from "@/hooks/useUpvotes";
 function Featured() {
   const [startups, setStartups] = useState([]);
   const [upvotedMap, setUpvotedMap] = useState({});
-  const { doUpvote, removeUpvote } = useUpvotes();
+  const { doUpvote } = useUpvotes(); 
   const { getStartups } = useStartups();
-  const userId = localStorage.getItem("userid");
+  
+  const userId =
+    typeof window !== "undefined" ? localStorage.getItem("userid") : null;
+
   useEffect(() => {
     const fetchStartups = async () => {
       const response = await getStartups();
-      if (response) {
+      if (Array.isArray(response)) {
         setStartups(response);
-        const userUpvoted = {}; 
-        setUpvotedMap(userUpvoted);
+        const initialMap = {};
+        response.forEach((startup) => {
+          initialMap[startup.id] = false;
+        });
+        setUpvotedMap(initialMap);
       }
     };
+
     fetchStartups();
   }, []);
 
-  const handleUpvote = async (startupId) => {
-    const alreadyUpvoted = upvotedMap[startupId];
-    if (alreadyUpvoted) {
-      const response = await removeUpvote(startupId, userId);
-      if (response) {
-        setUpvotedMap((prev) => ({ ...prev, [startupId]: false }));
-        setStartups((prev) =>
-          prev.map((s) =>
-            s.id === startupId
-              ? { ...s, upvotes_count: s.upvotes_count - 1 }
-              : s
-          )
-        );
-      }
-    } else {
-      const response = await doUpvote(startupId, userId);
-      console.log(response)
-      if (response) {
-        setUpvotedMap((prev) => ({ ...prev, [startupId]: true }));
-        setStartups((prev) =>
-          prev.map((s) =>
-            s.id === startupId
-              ? { ...s, upvotes_count: (s.upvotes_count || 0) + 1 }
-              : s
-          )
-        );
-      }
-      else{
-        alert('You can only upvote once!')
-      }
-    }
-  };
+const handleUpvote = async (startupId) => {
+  const response = await doUpvote(startupId, userId);
+  console.log(response);
+  if (response && response.message) {
+    const isRemoving = response.message === "Upvote removed successfully";
+    setUpvotedMap((prev) => ({
+      ...prev,
+      [startupId]: !isRemoving,
+    }));
+    setStartups((prev) =>
+      prev.map((s) =>
+        s.id === startupId
+          ? {
+              ...s,
+              upvotes_count: Math.max(
+                0,
+                (s.upvotes_count || 0) + (isRemoving ? -1 : 1)
+              ),
+            }
+          : s
+      )
+    );
 
+    await fetchStartups();
+  } else {
+    alert("Failed to upvote. Try again.");
+  }
+};
   return (
     <div className="container px-4 pt-12 mx-auto">
       <div className="flex items-center justify-between mb-8">
@@ -80,7 +82,7 @@ function Featured() {
             <div className="flex gap-6">
               <div className="relative shrink-0">
                 <Image
-                  src={product.image || "/logoipsum.png"}
+                  src={product.logo || "/logoipsum.png"}
                   alt={product.name}
                   width={120}
                   height={120}

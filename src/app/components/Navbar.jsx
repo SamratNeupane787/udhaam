@@ -14,7 +14,7 @@ export default function Navbar() {
   };
 
   const token = localStorage.getItem('token')
-
+  
   const handleLogout = () => {
     localStorage.removeItem("token");
     alert("Logged out successfully");
@@ -22,7 +22,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-white dark:bg-gray-900 shadow-md fixed top-0 w-full z-50">
+    <nav className="bg-white dark:bg-gray-900 shadow-md   w-full ">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
