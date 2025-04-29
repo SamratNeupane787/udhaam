@@ -15,8 +15,8 @@ function Featured() {
   const { doUpvote } = useUpvotes(); 
   const { getStartups } = useStartups();
   
-  const userId =
-    typeof window !== "undefined" ? localStorage.getItem("userid") : null;
+  let userId 
+    
 
   useEffect(() => {
     const fetchStartups = async () => {
@@ -32,6 +32,13 @@ function Featured() {
     };
 
     fetchStartups();
+
+    const storedUserId = localStorage.getItem("userId");
+    if (storedUserId) {
+      userId = storedUserId;
+    } else {
+      userId = null;
+    }
   }, []);
 
 const handleUpvote = async (startupId) => {

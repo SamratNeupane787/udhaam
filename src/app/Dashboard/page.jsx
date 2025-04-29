@@ -14,7 +14,8 @@ import { Button } from '../components/ui/button';
 
 function page() {
   const stats =0;
-  const userId = localStorage.getItem("userid");
+  let userId;
+  // const userId = localStorage.getItem("userid");
   console.log(userId)
   const {myStartups} = useStartups()
   const [startup, setMyStartups] = useState([])
@@ -28,6 +29,9 @@ function page() {
       }
     }
     fetchMyStartups()
+
+    userId = localStorage.getItem("userid")
+  
   },[])
   
   return (

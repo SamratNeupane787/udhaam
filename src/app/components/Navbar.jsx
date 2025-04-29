@@ -8,18 +8,21 @@ import { useRouter } from "next/navigation";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [userToken,setToken] = useState(null)
   const router = useRouter()
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
+ useEffect(() => {
+   const storedToken = localStorage.getItem("token");
+   setToken(storedToken);
+ }, []);
 
-  const token = localStorage.getItem('token')
-  
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    alert("Logged out successfully");
-    router.push("/auth/sign-in");
-  };
+ const handleLogout = () => {
+   localStorage.removeItem("token");
+   alert("Logged out successfully");
+   router.push("/auth/sign-in");
+ };
 
   return (
     <nav className="bg-white dark:bg-gray-900 shadow-md   w-full ">

@@ -13,7 +13,7 @@ function TrendingStartups() {
   const [trending, setTrending] = useState([]);
   const { trendingStartups } = useStartups();
   const { doUpvote } = useUpvotes();
-  const userId = localStorage.getItem("userid");
+  let userId
   const [upvotedMap, setUpvotedMap] = useState({});
   const router = useRouter()
   useEffect(() => {
@@ -24,7 +24,16 @@ function TrendingStartups() {
       }
     };
     fetchTrendingStartups();
+
+    const storedUserId = localStorage.getItem("userId")
+    if (storedUserId) {
+      userId = storedUserId
+    } else {
+      userId = null
+    }
   }, []);
+
+
 
 
 const handleUpvote = async (startupId) => {
