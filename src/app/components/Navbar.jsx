@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { Button } from "./ui/button";
@@ -56,7 +56,7 @@ export default function Navbar() {
             >
               Dashboard
             </a>
-            {!token ? (
+            {!userToken ? (
               <a
                 href="/auth/sign-in"
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
@@ -110,7 +110,7 @@ export default function Navbar() {
             >
               Dashboard
             </a>
-            {!token ? (
+            {!userToken ? (
               <a
                 href="/auth/sign-in"
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
