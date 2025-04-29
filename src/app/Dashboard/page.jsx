@@ -1,4 +1,4 @@
-"use client"; // this is necessary for the component to be treated as a client-side component
+"use client"; // Ensures the component is rendered on the client
 
 import React, { useEffect, useState } from "react";
 import {
@@ -18,32 +18,33 @@ function Page() {
   const [userId, setUserId] = useState(null); // State to store the userId
 
   useEffect(() => {
-    // Check if the component is running on the client
+    // Check if we're on the client (the window object is only available in the browser)
     if (typeof window !== "undefined") {
       const storedUserId = localStorage.getItem("userid");
-      setUserId(storedUserId);
+      if (storedUserId) {
+        setUserId(storedUserId); // Set the userId if it exists in localStorage
+      }
     }
-  }, []);
+  }, []); // This runs only once when the component mounts on the client
 
   useEffect(() => {
-    const fetchMyStartups = async () => {
-      if (!userId) return; // Don't try to fetch if userId is not available yet
-
-      try {
-        const response = await myStartups(userId);
-        console.log(response);
-        if (response) {
-          setMyStartups(response);
-        }
-      } catch (error) {
-        console.error("Failed to fetch startups:", error);
-      }
-    };
-
     if (userId) {
-      fetchMyStartups(); // Only fetch startups if userId is available
+      // Only fetch data if userId exists
+      const fetchMyStartups = async () => {
+        try {
+          const response = await myStartups(userId);
+          console.log(response);
+          if (response) {
+            setMyStartups(response); // Set the fetched startups
+          }
+        } catch (error) {
+          console.error("Failed to fetch startups:", error);
+        }
+      };
+
+      fetchMyStartups();
     }
-  }, [userId, myStartups]);
+  }, [userId, myStartups]); // This runs when userId changes
 
   return (
     <div>
