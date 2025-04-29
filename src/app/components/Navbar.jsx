@@ -30,7 +30,7 @@ export default function Navbar() {
               href="/"
               className="text-xl font-bold text-blue-600 dark:text-white"
             >
-              नेपाली Startups 🚀
+              Udhyaam
             </a>
           </div>
 
@@ -48,10 +48,10 @@ export default function Navbar() {
               New Startups
             </a>
             <a
-              href="/Submit"
+              href="/Dashboard"
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
-              Submit your Startups
+              Dashboard
             </a>
             {!token ? (
               <a
@@ -90,7 +90,7 @@ export default function Navbar() {
         >
           <div className="px-2 pt-2 pb-3 space-y-2">
             <a
-              href="#"
+              href="/"
               className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800"
             >
               Home
@@ -99,20 +99,29 @@ export default function Navbar() {
               href="#"
               className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800"
             >
-              Startups
+              New startups
             </a>
             <a
-              href="#"
+              href="/Dashboard"
               className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800"
             >
-              About
+              Dashboard
             </a>
-            <a
-              href="#"
-              className="block px-4 py-2 text-white bg-blue-600 rounded-lg text-center hover:bg-blue-700"
-            >
-              Login
-            </a>
+            {!token ? (
+              <a
+                href="/auth/sign-in"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                Login
+              </a>
+            ) : (
+              <Button
+                onClick={handleLogout}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                Logout
+              </Button>
+            )}
           </div>
         </motion.div>
       )}

@@ -3,10 +3,11 @@ import React, { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import useStartups from "@/hooks/useStartups";
 import { Card } from "./ui/card";
-import { ArrowUpCircle, ArrowDownCircle, Trophy, Clock } from "lucide-react";
+import { ArrowUpCircle, ArrowDownCircle, Trophy, Clock ,Text} from "lucide-react";
 import Image from "next/image";
 import useUpvotes from "@/hooks/useUpvotes";
 import { Badge } from "./ui/badge";
+import { useRouter } from "next/navigation";
 
 function TrendingStartups() {
   const [trending, setTrending] = useState([]);
@@ -14,7 +15,7 @@ function TrendingStartups() {
   const { doUpvote } = useUpvotes();
   const userId = localStorage.getItem("userid");
   const [upvotedMap, setUpvotedMap] = useState({});
-
+  const router = useRouter()
   useEffect(() => {
     const fetchTrendingStartups = async () => {
       const response = await trendingStartups();
@@ -74,7 +75,6 @@ const handleUpvote = async (startupId) => {
         {trending.map((product) => (
           <Card key={product.id} className="p-6 transition-all hover:shadow-lg">
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-       
               <div className="relative shrink-0 sm:col-span-1 flex justify-center sm:justify-start">
                 <Image
                   src={product.image || "/logoipsum.png"}
@@ -91,24 +91,37 @@ const handleUpvote = async (startupId) => {
                 )}
               </div>
 
-      
               <div className="sm:col-span-3 space-y-4">
                 <div className="flex flex-col sm:flex-row justify-between sm:items-start">
                   <h3 className="font-semibold text-xl">{product.name}</h3>
-          
+
                   <div className="flex gap-3 items-center sm:flex-col">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="hover:bg-primary/10 p-2"
-                      onClick={() => handleUpvote(product.id)}
-                    >
-                      <ArrowUpCircle className="w-6 h-6 sm:w-8 sm:h-8 text-primary hover:text-blue-600 transition" />
-                    </Button>
-                    <span className="text-sm sm:text-base font-medium">
-                      {product.upvotes_count ?? "0"}
-                    </span>
-                    
+                    <div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="hover:bg-primary/10 p-2"
+                        onClick={() => handleUpvote(product.id)}
+                      >
+                        <ArrowUpCircle className="w-6 h-6 sm:w-8 sm:h-8 text-primary hover:text-blue-600 transition" />
+                      </Button>
+                      <span className="text-sm sm:text-base font-medium">
+                        {product.upvotes_count ?? "0"}
+                      </span>
+                    </div>
+                    <div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="hover:bg-primary/10 p-2"
+                        onClick={()=>{router.push(`/startups/${product.id}`)}}
+                      >
+                        <Text className="w-6 h-6 sm:w-8 sm:h-8 text-primary hover:text-blue-600 transition" />
+                      </Button>
+                      <span className="text-sm sm:text-base font-medium">
+                        {product.upvotes_count ?? "0"}
+                      </span>
+                    </div>
                   </div>
                 </div>
 

@@ -1,12 +1,13 @@
 export default function useUpvotes() {
+  const APIURL = process.env.NEXT_PUBLIC_BASE_URL;
   const doUpvote = async (startupId, userId) => {
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/v1/startups/${startupId}/upvotes`, 
+        `${APIURL}/api/v1/startups/${startupId}/upvotes`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ user_id: userId}),
+          body: JSON.stringify({ user_id: userId }),
         }
       );
 
@@ -27,7 +28,7 @@ export default function useUpvotes() {
   const getUpvotes = async (startupId) => {
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/v1/startups/${startupId}/upvotes`, 
+        `${APIURL}/api/v1/startups/${startupId}/upvotes`,
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },

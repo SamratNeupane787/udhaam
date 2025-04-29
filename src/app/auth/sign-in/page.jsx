@@ -13,6 +13,7 @@ export default function SignupPage() {
   });
   const [errors, setErrors] = useState({});
 
+  const apiurl = process.env.NEXT_PUBLIC_BASE_URL
   const router = useRouter();
   const validateForm = () => {
     const newErrors = {};
@@ -38,7 +39,7 @@ export default function SignupPage() {
     if (!validateForm()) return;
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/login", {
+      const response = await fetch(`${apiurl}/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -61,6 +62,8 @@ export default function SignupPage() {
         const userId = data.status.data.user.id;
         console.log(userId)
         if (token) {
+          const ISSERVER = typeof window === "undefined";
+          if (!ISSERVER)
           localStorage.setItem("token", token); 
           localStorage.setItem("userid",userId)
           alert("Login successful");

@@ -13,7 +13,7 @@ export default function SignupPage() {
     password: "",
   });
   const [errors, setErrors] = useState({});
-
+  const apiurl = process.env.NEXT_PUBLIC_BASE_URL;
   const router = useRouter()
   const validateForm = () => {
     const newErrors = {};
@@ -37,17 +37,17 @@ export default function SignupPage() {
   const handleSubmit = async(e) => {
     e.preventDefault();
     if (!validateForm()) return;
-    try{const response = await fetch("http://127.0.0.1:8000/signup", {
+    try{const response = await fetch(`${apiurl}/signup`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json", 
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         user: {
           email: formData.email,
           password: formData.password,
         },
-      }), 
+      }),
     });
 
     const data = await response.json();

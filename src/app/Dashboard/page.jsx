@@ -6,10 +6,11 @@ import {
   CardHeader,
   CardTitle,
 } from "../components/ui/card";
-import { CheckCircle2, Clock, FileText, XCircle } from "lucide-react";
+import { CheckCircle2, Clock, FileText, Rocket, Ticket, XCircle } from "lucide-react";
 import { Separator } from '@radix-ui/react-select';
 import Submission from '../components/Submission';
 import useStartups from '@/hooks/useStartups';
+import { Button } from '../components/ui/button';
 
 function page() {
   const stats =0;
@@ -46,18 +47,8 @@ function page() {
             </p>
           </CardContent>
         </Card>
-        {/* <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Pending Review
-            </CardTitle>
-            <Clock className="h-4 w-4 text-yellow-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.pending || 0}</div>
-            <p className="text-xs text-muted-foreground">Awaiting decision</p>
-          </CardContent>
-        </Card>
+
+        {/*
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Accepted</CardTitle>
@@ -85,7 +76,7 @@ function page() {
 
         <Separator />
       </div>
-      <Submission startups={startup}/>
+      <Submission startups={startup} />
     </div>
   );
 }
