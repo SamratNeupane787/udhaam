@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { Rocket, Github, Mail } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/app/components/ui/button";
 import { Card } from "@/app/components/ui/card";
 import { Input } from "@/app/components/ui/input";
@@ -61,9 +61,18 @@ export default function SignupPage() {
         const token = response.headers.get("Authorization")?.split(" ")[1]; 
         const userId = data.status.data.user.id;
         console.log(userId)
-        if (token) {
-          const ISSERVER = typeof window === "undefined";
-          if (!ISSERVER)
+        // if (token) {
+        //   const ISSERVER = typeof window === "undefined";
+        //   if (!ISSERVER)
+        //   localStorage.setItem("token", token); 
+        //   localStorage.setItem("userid",userId)
+        //   alert("Login successful");
+        //   router.push("/");
+        // } else {
+        //   alert("Token not received");
+        // }
+        useEffect(()=>{
+            if (token) {
           localStorage.setItem("token", token); 
           localStorage.setItem("userid",userId)
           alert("Login successful");
@@ -71,6 +80,7 @@ export default function SignupPage() {
         } else {
           alert("Token not received");
         }
+        },[])
       } else {
         alert(data.status?.message || "Invalid login credentials");
       }
