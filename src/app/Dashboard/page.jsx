@@ -1,4 +1,4 @@
-"use client";
+"use client"; // this is necessary for the component to be treated as a client-side component
 
 import React, { useEffect, useState } from "react";
 import {
@@ -15,11 +15,19 @@ import useStartups from "@/hooks/useStartups";
 function Page() {
   const [startup, setMyStartups] = useState([]);
   const { myStartups } = useStartups();
+  const [userId, setUserId] = useState(null); // State to store the userId
+
+  useEffect(() => {
+    // Check if the component is running on the client
+    if (typeof window !== "undefined") {
+      const storedUserId = localStorage.getItem("userid");
+      setUserId(storedUserId);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchMyStartups = async () => {
-      const userId = localStorage.getItem("userid");
-      if (!userId) return;
+      if (!userId) return; // Don't try to fetch if userId is not available yet
 
       try {
         const response = await myStartups(userId);
@@ -32,8 +40,10 @@ function Page() {
       }
     };
 
-    fetchMyStartups();
-  }, []);
+    if (userId) {
+      fetchMyStartups(); // Only fetch startups if userId is available
+    }
+  }, [userId, myStartups]);
 
   return (
     <div>
