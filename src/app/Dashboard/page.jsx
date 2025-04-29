@@ -13,26 +13,28 @@ import useStartups from '@/hooks/useStartups';
 import { Button } from '../components/ui/button';
 
 function page() {
-  const stats =0;
-  let userId;
-  // const userId = localStorage.getItem("userid");
-  console.log(userId)
-  const {myStartups} = useStartups()
-  const [startup, setMyStartups] = useState([])
+  const [startup, setMyStartups] = useState([]);
+  const { myStartups } = useStartups();
 
-  useEffect(()=>{
-    const fetchMyStartups = async()=>{
-      const response = await myStartups(userId);
-      console.log(response)
-      if(response){
-        setMyStartups(response)
+  useEffect(() => {
+    const fetchMyStartups = async () => {
+      const userId = localStorage.getItem("userid");
+      if (!userId) return;
+
+      try {
+        const response = await myStartups(userId);
+        console.log(response);
+        if (response) {
+          setMyStartups(response);
+        }
+      } catch (error) {
+        console.error("Failed to fetch startups:", error);
       }
-    }
-    fetchMyStartups()
+    };
 
-    userId = localStorage.getItem("userid")
-  
-  },[])
+    fetchMyStartups();
+  }, []);
+
   
   return (
     <div>
