@@ -29,13 +29,12 @@ function Page() {
 
   useEffect(() => {
     if (userId) {
-      // Only fetch data if userId exists
       const fetchMyStartups = async () => {
         try {
           const response = await myStartups(userId);
           console.log(response);
           if (response) {
-            setMyStartups(response); // Set the fetched startups
+            setMyStartups(response);
           }
         } catch (error) {
           console.error("Failed to fetch startups:", error);
@@ -44,7 +43,7 @@ function Page() {
 
       fetchMyStartups();
     }
-  }, [userId, myStartups]); // This runs when userId changes
+  }, [userId]); 
 
   return (
     <div>
