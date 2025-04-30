@@ -25,13 +25,15 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import useStartups from "@/hooks/useStartups";
+import { N } from "framer-motion/dist/types.d-6pKw1mTI";
 
 export default function SubmitStartup() {
   const router = useRouter();
   const { submitStartups } = useStartups();
-
+  const [token,setTOken]= useState()
   useEffect(() => {
     const token = localStorage.getItem("token");
+    setTOken(token)
     if (!token) {
       router.push("/auth/sign-up");
     }
@@ -74,7 +76,7 @@ export default function SubmitStartup() {
     };
 
     try {
-      const response = await submitStartups(data);
+      const response = await submitStartups(data, token);
       if (response) {
         alert("Submitted");
         router.push("/");
@@ -99,7 +101,6 @@ export default function SubmitStartup() {
 
           <Card className="p-6">
             <div className="space-y-6">
-              {/* Basic Information */}
               <div className="flex flex-col gap-3 ">
                 <div>
                   <label className="text-sm font-medium">Startup Name*</label>

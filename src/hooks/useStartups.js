@@ -1,6 +1,6 @@
 export default function useStartups(){
   const APIURL = process.env.NEXT_PUBLIC_BASE_URL;
-  const token = localStorage.getItem("token")
+  // const token = localStorage.getItem("token")
   console.log(APIURL)
   let dataLoading = false
   const getStartups = async()=>{
@@ -58,7 +58,7 @@ export default function useStartups(){
   }
 
 
-  const submitStartups = async (data) => {
+  const submitStartups = async (data,token) => {
  
     console.log(data)
     try {
