@@ -25,7 +25,6 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import useStartups from "@/hooks/useStartups";
-import { N } from "framer-motion/dist/types.d-6pKw1mTI";
 
 export default function SubmitStartup() {
   const router = useRouter();
