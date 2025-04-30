@@ -1,20 +1,22 @@
 "use client";
 import Link from "next/link";
-import { Rocket, Github, Mail } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Rocket } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/app/components/ui/button";
 import { Card } from "@/app/components/ui/card";
 import { Input } from "@/app/components/ui/input";
 import { useRouter } from "next/navigation";
+
 export default function SignupPage() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-  const [errors, setErrors] = useState({});
 
-  const apiurl = process.env.NEXT_PUBLIC_BASE_URL
+  const [errors, setErrors] = useState({});
+  const apiurl = process.env.NEXT_PUBLIC_BASE_URL;
   const router = useRouter();
+
   const validateForm = () => {
     const newErrors = {};
 
@@ -53,34 +55,19 @@ export default function SignupPage() {
       });
 
       const data = await response.json();
-      console.log()
-      
-
 
       if (response.ok) {
-        const token = response.headers.get("Authorization")?.split(" ")[1]; 
+        const token = response.headers.get("Authorization")?.split(" ")[1];
         const userId = data.status.data.user.id;
-        console.log(userId)
-        // if (token) {
-        //   const ISSERVER = typeof window === "undefined";
-        //   if (!ISSERVER)
-        //   localStorage.setItem("token", token); 
-        //   localStorage.setItem("userid",userId)
-        //   alert("Login successful");
-        //   router.push("/");
-        // } else {
-        //   alert("Token not received");
-        // }
-        useEffect(()=>{
-            if (token) {
-          localStorage.setItem("token", token); 
-          localStorage.setItem("userid",userId)
+
+        if (typeof window !== "undefined" && token) {
+          localStorage.setItem("token", token);
+          localStorage.setItem("userid", userId);
           alert("Login successful");
           router.push("/");
         } else {
           alert("Token not received");
         }
-        },[])
       } else {
         alert(data.status?.message || "Invalid login credentials");
       }
@@ -118,7 +105,7 @@ export default function SignupPage() {
               Welcome Back Entrepreneur
             </h2>
             <p className="text-sm text-muted-foreground mt-2">
-             Login to your Account!
+              Login to your Account!
             </p>
           </div>
         </div>
